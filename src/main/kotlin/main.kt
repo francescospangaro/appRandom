@@ -14,9 +14,9 @@ fun main() = application {
 
     if (isOpen) {
         val trayState = rememberTrayState()
-        val notification1 = rememberNotification("Notifichina", "Ti penso!")
-        val notification2 = rememberNotification("Notifichina", "Puzzi!")
-        val notification3 = rememberNotification("Notifichina", "Muaaaah!")
+        val notification1 = rememberNotification("Notification", "Notification1")
+        val notification2 = rememberNotification("Notification", "Notification2")
+        val notification3 = rememberNotification("Notification", "Notification3")
 
 
         Tray(
@@ -24,21 +24,21 @@ fun main() = application {
             icon = icon,
 
             menu = {
-                Menu("Notifichine"){
+                Menu("Notification"){
                     Item(
-                        "Chi pensi?",
+                        "Notification1",
                         onClick = {
                             trayState.sendNotification(notification1)
                         }
                     )
                     Item(
-                        "Puzza?",
+                        "Notification2",
                         onClick = {
                             trayState.sendNotification(notification2)
                         }
                     )
                     Item(
-                        "Bacino",
+                        "Notification3",
                         onClick = {
                             trayState.sendNotification(notification3)
                         }
