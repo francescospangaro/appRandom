@@ -36,6 +36,7 @@ internal class Server {
         val message1 = input1.readLine()
         println("Server receiving [${message1}]")
         if (message1 == "STOP") {
+            output1.println(message1)
             this.stop()
         } else {
             println("Server responding [${message1}]")
@@ -47,6 +48,7 @@ internal class Server {
         val message2 = input2.readLine()
         println("Server receiving [${message2}]")
         if (message2 == ("STOP")) {
+            output2.println("STOPPING")
             this.stop()
         } else {
             println("Server responding [${message2}]")
@@ -60,7 +62,6 @@ internal class Server {
             output1.close()
             input2.close()
             output2.close()
-            server.close()
         } catch (e: Exception) {
             println(e)
         }

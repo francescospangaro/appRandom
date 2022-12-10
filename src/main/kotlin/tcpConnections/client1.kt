@@ -4,9 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.application
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Tray
+import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberNotification
 import androidx.compose.ui.window.rememberTrayState
 import java.io.BufferedReader
@@ -58,13 +58,16 @@ internal class Client1 {
 
 fun main() = application {
     val client1 = Client1()
-    val flag = client1.returnFlag()
     client1.startConnection("127.0.0.1", 9999)
     val icon = painterResource("icon.png")
     var isOpen by remember { mutableStateOf(true) }
 
     val thread = Thread {
-        client1.receiveMessage()
+        while (true) {
+            synchronized(client1) {
+                client1.receiveMessage()
+            }
+        }
     }
     thread.start()
 
@@ -73,43 +76,48 @@ fun main() = application {
         val notification1 = rememberNotification("Notification", "Notification1")
         val notification2 = rememberNotification("Notification", "Notification2")
         val notification3 = rememberNotification("Notification", "Notification3")
-
-
+        var flag = client1.returnFlag()
         Tray(
             state = trayState,
             icon = icon,
-
-
             menu = {
                 Menu("Notification") {
+                    /*val threadPazzo = Thread {
+                        synchronized(client1) {
+                            while (true) {
+                                flag = client1.returnFlag()
+                                if (flag == "Notification1") {
+                                    trayState.sendNotification(notification1)
+                                }
+                                if (flag == "Notification2") {
+                                    trayState.sendNotification(notification2)
+                                }
+                                if (flag == "Notification3") {
+                                    trayState.sendNotification(notification3)
+                                }
+                                client1.setFlag("reset")
+                            }
+                        }
+                    }
+                    threadPazzo.start()*/
                     Item(
                         "Notification1",
+
                         onClick = {
                             client1.sendMessage("Notification1")
-                            /*if(flag=="Notification1"){
-                                trayState.sendNotification(notification1)
-                                client1.setFlag("reset")
-                            }*/
                         }
                     )
                     Item(
                         "Notification2",
+
                         onClick = {
                             client1.sendMessage("Notification2")
-                            /*if(flag=="Notification2"){
-                                trayState.sendNotification(notification2)
-                                client1.setFlag("reset")
-                            }*/
                         }
                     )
                     Item(
                         "Notification3",
                         onClick = {
                             client1.sendMessage("Notification3")
-                            /*if(flag=="Notification3"){
-                                trayState.sendNotification(notification3)
-                                client1.setFlag("reset")
-                            }*/
                         }
                     )
                 }
@@ -119,6 +127,7 @@ fun main() = application {
 
                     onClick = {
                         client1.sendMessage("STOP")
+                        while (flag != "STOPPING");
                         client1.stopConnection()
                         exitApplication()
                     }
